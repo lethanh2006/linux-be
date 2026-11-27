@@ -44,3 +44,12 @@ Production (`NODE_ENV=production`) tự áp migration khi khởi động.
 | Phương thức | Đường dẫn | Trả về |
 |---|---|---|
 | GET | `/api/health` | `{ status: "ok", db: "up" \| "down" }` |
+
+## Deploy
+
+| Thành phần | Ở đâu |
+|---|---|
+| API | Vercel project `linux-be` → https://linux-be.vercel.app/api (push lên `master` là tự deploy) |
+| Database | Neon project `linux-web` (Singapore) |
+
+Biến môi trường trên Vercel: `DATABASE_URL` (Neon, qua pooler), `DATABASE_URL_UNPOOLED`, `NODE_ENV=production`. `vercel.json` khai báo `framework: nestjs`. Nếu thiếu dòng này, Vercel coi đây là web tĩnh và trả 404.
