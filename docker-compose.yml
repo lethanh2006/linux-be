@@ -1,0 +1,18 @@
+services:
+  mongo:
+    image: mongo:8
+    container_name: linux-web-mongo
+    restart: unless-stopped
+    # Chỉ mở cho máy mình (127.0.0.1), không lộ ra mạng ngoài.
+    ports:
+      - '127.0.0.1:27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.adminCommand("ping").ok']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mongo-data:
