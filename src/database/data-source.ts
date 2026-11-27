@@ -15,5 +15,8 @@ export function dataSourceOptions(url: string): DataSourceOptions {
     migrations: MIGRATIONS,
     // Không tự sửa bảng theo entity; đổi cấu trúc bảng phải qua migration.
     synchronize: false,
+    // uuid sinh bằng gen_random_uuid() có sẵn từ PostgreSQL 13, không cần cài extension.
+    uuidExtension: 'pgcrypto',
+    installExtensions: false,
   };
 }

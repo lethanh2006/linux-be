@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { type EnvironmentVariables, NodeEnv, validateEnv } from './config/env.validation.js';
 import { dataSourceOptions } from './database/data-source.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { LearnersModule } from './modules/learners/learners.module.js';
+import { ProgressModule } from './modules/progress/progress.module.js';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { HealthModule } from './modules/health/health.module.js';
       }),
     }),
     HealthModule,
+    LearnersModule,
+    ProgressModule,
   ],
 })
 export class AppModule {}

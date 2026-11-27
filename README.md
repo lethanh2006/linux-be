@@ -44,6 +44,19 @@ Production (`NODE_ENV=production`) tự áp migration khi khởi động.
 | Phương thức | Đường dẫn | Trả về |
 |---|---|---|
 | GET | `/api/health` | `{ status: "ok", db: "up" \| "down" }` |
+| POST | `/api/learners` | Tạo học viên ẩn danh → `{ id, code, createdAt }` |
+| POST | `/api/learners/restore` | Body `{ code: "XXXX-XXXX" }` → học viên có mã đó (404 nếu không có) |
+| GET | `/api/progress` | Cần header `X-Learner-Id`. Trả `{ learner: { code, createdAt }, lessons: [...] }` |
+| PUT | `/api/progress/:slug` | Cần header `X-Learner-Id`. Body `{ completed?, quizScore?, quizTotal? }` → tiến độ bài đó |
+
+Học viên không cần đăng ký. Trình duyệt giữ `id` (như một khoá bí mật) và gửi qua header `X-Learner-Id`; `code` là mã ngắn để khôi phục tiến độ trên máy khác.
+
+Bảng dữ liệu:
+
+| Bảng | Cột chính |
+|---|---|
+| `learner` | `id` (uuid), `code` (duy nhất), `created_at` |
+| `lesson_progress` | khoá chính `(learner_id, lesson_slug)`, `completed_at`, `quiz_score`, `quiz_total`, `updated_at` |
 
 ## Deploy
 
