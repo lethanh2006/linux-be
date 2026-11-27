@@ -1,18 +1,25 @@
+# Tên project riêng: thư mục tên "backend" trùng với project khác trên máy, không đặt thì compose gộp chung.
+name: linux-web
+
 services:
-  mongo:
-    image: mongo:8
-    container_name: linux-web-mongo
+  postgres:
+    image: postgres:17-alpine
+    container_name: linux-web-postgres
     restart: unless-stopped
-    # Chỉ mở cho máy mình (127.0.0.1), không lộ ra mạng ngoài.
+    environment:
+      POSTGRES_USER: linux
+      POSTGRES_PASSWORD: '123456'
+      POSTGRES_DB: linux_web
+    # Chỉ mở cho máy mình (127.0.0.1). Cổng 5434 để không đụng Postgres khác đang dùng 5432/5433.
     ports:
-      - '127.0.0.1:27017:27017'
+      - '127.0.0.1:5434:5432'
     volumes:
-      - mongo-data:/data/db
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.adminCommand("ping").ok']
+      test: ['CMD-SHELL', 'pg_isready -U linux -d linux_web']
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  mongo-data:
+  postgres-data:

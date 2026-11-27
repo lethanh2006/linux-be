@@ -25,7 +25,7 @@ A route handler can return a web `Response`, a `ReadableStream` or an async gene
 
 Nest's packages are ESM only, and this project is ESM too: relative imports end in `.js`, `__dirname` doesn't exist (use `import.meta.dirname`), and tests run on Vitest, so mocks are `vi.fn()`, not `jest.fn()`.
 
-In this project, `src/main.ts` creates the app, sets the global `api` prefix and listens on `PORT` (4001 by default). `src/app.module.ts` is the root module: it validates env vars (`src/config/env.validation.ts`), connects to MongoDB through `@nestjs/mongoose` (`MONGODB_URI`), and imports the feature modules under `src/modules/`. Unit tests sit beside the code as `*.spec.ts`; Vitest runs them (`pnpm test`). Local MongoDB runs from `docker-compose.yml`.
+In this project, `src/main.ts` creates the app, sets the global `api` prefix and listens on `PORT` (4001 by default). `src/app.module.ts` is the root module: it validates env vars (`src/config/env.validation.ts`), connects to PostgreSQL through `@nestjs/typeorm` (`DATABASE_URL`, options in `src/database/data-source.ts`), and imports the feature modules under `src/modules/`. Unit tests sit beside the code as `*.spec.ts`; Vitest runs them (`pnpm test`). Local PostgreSQL runs from `docker-compose.yml` (port 5434). Entities and migrations are listed explicitly in `src/database/entities/index.ts` and `src/database/migrations/index.ts` (no globs, because Vercel bundles the code); production runs pending migrations on startup.
 
 When a task says how to test, follow it. When it says nothing, cover the behaviour you change with focused tests rather than adding broad e2e suites.
 

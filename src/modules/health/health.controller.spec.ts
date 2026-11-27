@@ -1,25 +1,20 @@
-import type { Connection } from 'mongoose';
+import type { DataSource } from 'typeorm';
 import { HealthController } from './health.controller.js';
 
-function fakeConnection(ping: () => Promise<unknown>): Connection {
-  return { db: { admin: () => ({ ping }) } } as unknown as Connection;
+function fakeDataSource(query: () => Promise<unknown>): DataSource {
+  return { query } as unknown as DataSource;
 }
 
 describe('HealthController', () => {
-  it('báo db up khi MongoDB trả lời ping', async () => {
-    const controller = new HealthController(fakeConnection(() => Promise.resolve({ ok: 1 })));
+  it('báo db up khi PostgreSQL trả lời', async () => {
+    const controller = new HealthController(fakeDataSource(() => Promise.resolve([{ '?column?': 1 }])));
     await expect(controller.check()).resolves.toEqual({ status: 'ok', db: 'up' });
   });
 
-  it('báo db down khi ping lỗi', async () => {
+  it('báo db down khi truy vấn lỗi', async () => {
     const controller = new HealthController(
-      fakeConnection(() => Promise.reject(new Error('mất kết nối'))),
+      fakeDataSource(() => Promise.reject(new Error('mất kết nối'))),
     );
-    await expect(controller.check()).resolves.toEqual({ status: 'ok', db: 'down' });
-  });
-
-  it('báo db down khi chưa có kết nối', async () => {
-    const controller = new HealthController({ db: undefined } as unknown as Connection);
     await expect(controller.check()).resolves.toEqual({ status: 'ok', db: 'down' });
   });
 });

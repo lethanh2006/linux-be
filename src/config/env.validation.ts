@@ -25,10 +25,10 @@ export class EnvironmentVariables {
   @Max(65535)
   PORT: number = 4001;
 
-  /** Chuỗi kết nối MongoDB, ví dụ mongodb://localhost:27017/linux_web */
+  /** Chuỗi kết nối PostgreSQL, ví dụ postgresql://linux:123456@localhost:5434/linux_web */
   @IsString()
   @IsNotEmpty()
-  MONGODB_URI: string;
+  DATABASE_URL: string;
 
   /** Danh sách origin được phép gọi API, phân tách bằng dấu phẩy. */
   @IsString()

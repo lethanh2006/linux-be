@@ -1,18 +1,21 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
-import { type EnvironmentVariables, validateEnv } from './config/env.validation.js';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { type EnvironmentVariables, NodeEnv, validateEnv } from './config/env.validation.js';
+import { dataSourceOptions } from './database/data-source.js';
 import { HealthModule } from './modules/health/health.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true, validate: validateEnv }),
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService<EnvironmentVariables, true>) => ({
-        uri: config.get('MONGODB_URI', { infer: true }),
-        // Mongo chưa chạy thì báo lỗi sau 5 giây thay vì treo lâu.
-        serverSelectionTimeoutMS: 5000,
+        ...dataSourceOptions(config.get('DATABASE_URL', { infer: true })),
+        // Vercel không có bước chạy lệnh riêng nên production tự áp migration khi khởi động.
+        migrationsRun: config.get('NODE_ENV', { infer: true }) === NodeEnv.Production,
+        // Database chưa chạy thì báo lỗi sau 2 lần thử thay vì thử lại rất lâu.
+        retryAttempts: 2,
       }),
     }),
     HealthModule,
