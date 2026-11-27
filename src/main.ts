@@ -1,7 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import helmet from 'helmet';
 import { AppModule } from './app.module.js';
 import type { EnvironmentVariables } from './config/env.validation.js';
 
@@ -11,7 +10,6 @@ async function bootstrap() {
 
   // Mọi API nằm dưới /api, khớp với proxy /api/* của Next.js.
   app.setGlobalPrefix('api');
-  app.use(helmet());
   app.enableCors({
     origin: config
       .get('CORS_ORIGIN', { infer: true })
@@ -24,6 +22,8 @@ async function bootstrap() {
   );
   app.enableShutdownHooks();
 
+  // PORT lấy từ biến môi trường (Vercel tự cấp), ở máy mình mặc định 4001.
   await app.listen(config.get('PORT', { infer: true }));
 }
-await bootstrap();
+// Không dùng await ở cấp ngoài cùng: bộ build của Vercel có thể biên dịch ra CommonJS.
+void bootstrap();
